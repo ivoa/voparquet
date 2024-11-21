@@ -83,8 +83,7 @@ Combining the virtues of VOTable and Parquet therefore
 can supply a format which delivers efficiency alongside
 rich astronomical metadata.
 
-This Note specifically addresses the question of how to
-effect this combination.
+This Note addresses the question of how to effect that combination.
 In particular it provides a prescription for embedding
 VOTable metadata in parquet files in a way which will be interoperable
 between data producers and consumers from different projects.
@@ -95,6 +94,28 @@ prescriptions here will remain valid as a backwardly compatible
 baseline for some while, so that future iterations of parquet I/O
 software in the VO will remain compatible with files written
 according to this Note.
+
+\subsection{Scope}
+
+The topic of this Note invites other discussions, including
+best practice for sharding large datasets among multiple parquet files,
+policy for choice of compression algorithms within parquet,
+and the application of similar ideas to enhance other metadata-poor
+file formats using VOTable.
+
+This Note avoids those questions in the interest of achieving rapid
+consensus on the question of combining VOTable and parquet.
+Several projects will be generating large parquet collections
+in the near future, so that early agreement on the basics of the format
+is required to achieve interoperability between a number of
+datasets too large to be rewritten at a later date.
+
+Future work may build on the current document and on implementation
+experience to produce a revised Note or a Recommendation-track document
+that enhances the current proposal or addresses
+some of these wider questions.
+
+
 
 \appendix
 \section{Changes from Previous Versions}
