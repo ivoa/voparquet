@@ -48,9 +48,53 @@ infrastructure that enable VO applications.
 
 \section{Introduction}
 
-Parquet is good for data but poor for metadata.
-VOTable, the other way round.
-Let's get them together and have some fun.
+The \href{https://parquet.apache.org/docs/}{Apache Parquet file format}
+is an open column-oriented data storage
+format first developed in 2013.
+It offers per-column compression, dictionary encoding, and
+a kind of column value indexing.
+A number of data processing environments optimised for parallel
+computing make use of these features to enable fast processing
+of large or very large tables.
+In 2024, a number of astronomy projects including Rubin, Gaia and SPHEREx
+are using or planning to use parquet for storage, processing
+and distribution of large-scale astronomical data products.
+I/O libraries are available in many languages including Python,
+Java, C++ and Rust, and these have been leveraged by astronomer-facing
+software such as Astropy, CDS services and TOPCAT to facilitate
+use of parquet data in astronomy.
+
+While offering efficient data processing facilities however,
+the standard metadata provided by Parquet files is quite primitive.
+Apart from a name and datatype for each column,
+there is only a list of untyped key-value pairs per table
+and per column, with no standard semantics for the keys.
+For scientific usability, more metadata is desirable and even necessary,
+especially in view of the complexity of the data represented;
+tables can easily contain hundreds of columns.
+A minimum requirement is column attributes such as units, descriptions
+and UCDs; in many cases additional information relating to
+coordinate systems, service descriptors or processing flags
+may also be required.
+
+The VOTable format has been developed within the VO since its
+inception to hold exactly the kind of metadata required here.
+Combining the virtues of VOTable and Parquet therefore
+can supply a format which delivers efficiency alongside
+rich astronomical metadata.
+
+This Note specifically addresses the question of how to
+effect this combination.
+In particular it provides a prescription for embedding
+VOTable metadata in parquet files in a way which will be interoperable
+between data producers and consumers from different projects.
+Although usage may be refined in future as the result of
+developing requirements and implementation experience,
+the intention (at least, the hope) is that the
+prescriptions here will remain valid as a backwardly compatible
+baseline for some while, so that future iterations of parquet I/O
+software in the VO will remain compatible with files written
+according to this Note.
 
 \appendix
 \section{Changes from Previous Versions}
