@@ -39,5 +39,9 @@ ivoatex/Makefile:
 	@echo
 	git submodule update --init
 
+STILTS ?= stilts
+
+# This test needs STILTS (http://www.starlink.ac.uk/stilts/)
 test:
-	@echo "No tests defined yet"
+	@ # Shell gymnastics ensure fail return value in case of any output
+	! $(STILTS) votlint votable=metadata-example.vot | grep .
