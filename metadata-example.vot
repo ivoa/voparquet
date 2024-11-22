@@ -1,0 +1,17 @@
+<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+  <RESOURCE type="results">
+    <TABLE name="sky">
+      <DESCRIPTION>Star catalogue</DESCRIPTION>
+      <FIELD datatype="long" name="ID">
+        <DESCRIPTION>Source identifier</DESCRIPTION>
+      </FIELD>
+      <FIELD datatype="double" name="RA" ucd="pos.eq.ra" unit="deg">
+        <DESCRIPTION>ICRS Right Ascension</DESCRIPTION>
+      </FIELD>
+      <FIELD datatype="double" name="DEC" ucd="pos.eq.dec" unit="deg">
+        <DESCRIPTION>ICRS Declination</DESCRIPTION>
+      </FIELD>
+      <!-- Metadata-only TABLE - no DATA element -->
+    </TABLE>
+  </RESOURCE>
+</VOTABLE>

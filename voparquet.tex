@@ -19,6 +19,11 @@
 % \previousversion[????URL????]{????Concise Document Label????}
 \previousversion{This is the first public release}
 
+\lstloadlanguages{XML}
+\lstset{basicstyle=\ttfamily\scriptsize}
+
+\newcommand{\voparquet}{VOParquet}
+
 
 \begin{document}
 \begin{abstract}
@@ -27,7 +32,8 @@ with widespread industry tool support.
 It is being adopted by several astronomy projects for bulk storage and
 distribution of large table products.
 This Note discusses best practice for use of parquet within the VO,
-in particular the use of VOTable to attach rich astronomical metadata
+and in particular defines the \voparquet\ convention
+which uses VOTable to attach rich astronomical metadata
 to otherwise metadata-poor parquet files.
 \end{abstract}
 
@@ -47,6 +53,7 @@ infrastructure that enable VO applications.
 
 
 \section{Introduction}
+\label{sec:intro}
 
 The \href{https://parquet.apache.org/docs/}{Apache Parquet file format}
 is an open column-oriented data storage
@@ -77,7 +84,8 @@ and UCDs; in many cases additional information relating to
 coordinate systems, service descriptors or processing flags
 may also be required.
 
-The VOTable format has been developed within the VO since its
+The VOTable format \citep{2019ivoa.spec.1021O}
+has been developed within the VO since its
 inception to hold exactly the kind of metadata required here.
 Combining the virtues of VOTable and Parquet therefore
 can supply a format which delivers efficiency alongside
@@ -96,8 +104,9 @@ software in the VO will remain compatible with files written
 according to this Note.
 
 \subsection{Scope}
+\label{sec:scope}
 
-The topic of this Note invites other discussions, including
+The topic of this Note suggests other discussions, including
 best practice for sharding large datasets among multiple parquet files,
 policy for choice of compression algorithms within parquet,
 and the application of similar ideas to enhance other metadata-poor
@@ -115,6 +124,74 @@ experience to produce a revised Note or a Recommendation-track document
 that enhances the current proposal or addresses
 some of these wider questions.
 
+\section{Serialization}
+
+\subsection{Approach}
+
+The parquet and VOTable file formats both provide serialization
+of tabular data, along with more or less file- and column-level metadata.
+Given an abstract tabular dataset with rich metadata,
+the basic prescription for writing a \voparquet\ file is:
+\begin{enumerate}
+\item serialize the table to VOTable but without including the data part,
+      thus producing an XML document containing table metadata only
+\item serialize the table to parquet in the usual way, but
+\item include the data-less VOTable document in the file-level metadata
+      of the parquet file
+\end{enumerate}
+When reading such a file:
+\begin{enumerate}
+\item read the parquet data in the usual way
+\item search for a VOTable in the file-level metadata
+\item if one is present, parse it and use the table- and column-level
+      metadata it contains to decorate the data read from parquet
+\end{enumerate}
+
+The serialised table is therefore a perfectly legal parquet file,
+which can be read by any parquet I/O software.
+But \voparquet-aware software can use the attached VOTable to recover
+the rich metadata associated with the original table.
+
+\subsection{Details (Normative)}
+\label{sec:details}
+
+The data-less VOTable document stored in the parquet metadata
+must contain exactly one \xmlel{RESOURCE} element marked with the
+\xmlel{type="results"} attribute,
+and that \xmlel{RESOURCE} must contain
+exactly one \xmlel{TABLE} child element,
+in accordance with DALI 1.1 sec 4.4 \citep{2017ivoa.spec.0517D}.
+That \xmlel{TABLE} is the table that describes the data in the
+enclosing parquet file, and is described here as the metadata table.
+The VOTable file may contain other \xmlel{TABLE} elements
+providing auxiliary data or metadata,
+but these will not be discussed further here.
+This metadata table looks exactly like a normal \xmlel{TABLE} element
+except that it has no \xmlel{DATA} child
+(this is permitted by the VOTable schema).
+In particular it must contain \xmlel{FIELD} elements describing the
+columns of the parquet data table,
+and may contain other elements such as \xmlel{PARAM}, \xmlel{COOSYS} etc
+providing additional table-level metadata.
+This document must be a schema-valid and legal VOTable instance.
+No particular VOTable version is mandated by this convention.
+
+An example VOTable metadata document might look like this:
+\lstinputlisting{metadata-example.vot}
+
+This dataless VOTable document is stored in the file-level
+{\tt key\_value\_metadata} list of the parquet file.
+This list contains an unstructured list of string-string key-value pairs,
+and is available for applications to populate with any metadata.
+The \voparquet\ convention requires the following key-value pairs
+to be present:
+\begin{bigdescription}
+\item[{\tt IVOA.VOTable-Parquet.version}]
+   The version of this convention.  Must be "1.0" at this version.
+\item[{\tt IVOA.VOTable-Parquet.content}]
+   The content of the data-less VOTable document described above,
+   encoded using UTF-8.
+\end{bigdescription}
 
 
 \appendix
