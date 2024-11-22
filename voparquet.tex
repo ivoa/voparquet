@@ -193,6 +193,37 @@ to be present:
    encoded using UTF-8.
 \end{bigdescription}
 
+\subsection{Data/Metadata Mismatches}
+
+In the most straightforward case, there will be a one-to-one mapping
+of columns in the parquet data table and the VOTable metadata table,
+where the N'th FIELD of the metadata table provides an accurate
+description of the N'th column of the data table,
+in particular declaring a VOTable \xmlel{datatype} attribute that
+corresponds to the physical/logical type of that parquet column.
+It is expected that for many tables this will be possible.
+
+However, the data models of VOTable and Parquet do not exactly match,
+and it is possible to store columns in a parquet file that cannot be
+accurately described with VOTable metadata;
+for instance parquet columns can store structured objects and
+unsigned 64-bit integers, neither of which can be stored directly
+in VOTable.
+
+In the case of such mismatches, writers must write one VOTable FIELD
+for each top-level parquet column,
+and make a best effort to describe the data.
+Readers must treat the parquet data as final,
+and make use of as much column metadata as is feasible,
+for instance using units and UCDs where present but discarding datatypes
+incompabible with the parquet data columns.
+If no such reconciliation can be made, or for any other reason,
+the reader is free to discard the VOTable metadata and use only
+the parquet data.
+
+Future evolutions of this convention may refine or adjust this advice.
+
+
 
 \appendix
 \section{Changes from Previous Versions}
