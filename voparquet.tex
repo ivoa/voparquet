@@ -139,15 +139,16 @@ some of these wider questions.
 
 The parquet and VOTable file formats both provide serialization
 of tabular data, along with some degree of file- and column-level metadata.
-Given an abstract table with rich metadata,
+Given an abstract input table with rich metadata,
 the basic prescription for writing a \voparquet\ file is:
 \begin{enumerate}
-\item serialize the table to VOTable but without including the data part,
+\item serialize the input table to VOTable but without including the data part,
       thus producing an XML document containing table metadata only
-\item serialize the table to parquet in the usual way, but
+\item serialize the input table to parquet in the usual way, but
 \item include the data-less VOTable document in the file-level metadata
       of the parquet file
 \end{enumerate}
+The parquet file generated in the final step is the \voparquet\ output.
 When reading such a file:
 \begin{enumerate}
 \item read the parquet data in the usual way
@@ -164,27 +165,29 @@ the rich metadata associated with the original table.
 \subsection{Serialization Format}
 \label{sec:format}
 
-The data-less VOTable document stored in the parquet metadata
-must contain exactly one \xmlel{RESOURCE} element marked with the
-\xmlel{type="results"} attribute,
-and that \xmlel{RESOURCE} must contain
-exactly one \xmlel{TABLE} child element,
-in accordance with DALI 1.1 Section 4.4 \citep{2017ivoa.spec.0517D}.
-That \xmlel{TABLE} element is the one whose metadata describes
-the data in the enclosing parquet file,
-and it is denoted here the {\em metadata table}.
-The VOTable document may contain other \xmlel{TABLE} elements
-providing auxiliary data or metadata,
-but these are not relevant to the VOParquet convention.
-
-The metadata table looks exactly like a normal \xmlel{TABLE} element
+The VOTable metadata document stored in the parquet metadata
+must contain a \xmlel{TABLE} element describing the parquet data table.
+This \xmlel{TABLE} element, designated the {\em metadata table element},
+looks exactly like a normal \xmlel{TABLE} element
 except that it has no \xmlel{DATA} child
 (such dataless tables are permitted by the VOTable schema).
 In particular it must contain \xmlel{FIELD} elements describing the
-columns of the parquet data table,
-and may contain other elements such as \xmlel{PARAM}, \xmlel{COOSYS} etc
+columns of the parquet data,
+and it may contain other elements such as \xmlel{PARAM}, \xmlel{COOSYS} etc
 providing additional table-level metadata.
-This document must be a schema-valid and legal VOTable instance.
+ 
+This metadata table element should appear as the
+only \xmlel{TABLE} child of the only \xmlel{RESOURCE} element
+marked with the \xmlel{type="results"} attribute in the VOTable document.
+This is in line with DALI 1.1 Section 4.4 \citep{2017ivoa.spec.0517D}.
+It should therefore be the only node identified by the XPath
+``\verb|//v:RESOURCE[@type='results']/v:TABLE|'',
+where ``{\tt v}'' represents the VOTable namespace.
+Other \xmlel{RESOURCE}s and \xmlel{TABLE}s,
+for instance providing auxiliary data or metadata,
+may appear in the VOTable document,
+but are not used to describe the parquet data directly.
+The VOTable document must be a schema-valid and legal VOTable instance.
 No particular VOTable version is mandated by this convention.
 
 An example VOTable metadata document describing a 3-column table
@@ -193,7 +196,7 @@ might look like this:
 
 This dataless VOTable document is stored in the file-level
 {\tt key\_value\_metadata} list of the parquet file.
-This list is defined by the parquet file
+That list is defined by the parquet file
 format\footnote{\url{https://parquet.apache.org/docs/file-format/}}
 to contain an unstructured list of string-string key-value pairs,
 and is available for applications to populate with arbitrary metadata.
@@ -242,7 +245,7 @@ for instance using units and UCDs where present but discarding
 VOTable datatypes that are incompatible with the parquet data columns.
 Ignoring the metadata table \xmlel{datatype} and \xmlel{arraysize} attributes
 on \xmlel{FIELD} elements altogether in favour of column types acquired
-from the parquet parsing may be a good strategy.
+from the parquet parsing would be one way for readers to handle this.
 If no reconciliation between the VOTable metadata and
 parquet data can be made, or for any other reason,
 the reader is free to discard the VOTable metadata and use only
@@ -261,7 +264,7 @@ and use of the existing per-table and per-column key-value lists
 defined by the parquet format for direct (non-VOTable) storage
 of metadata items.
 
-This Note neither requires or forbids use of these alternative
+This Note neither requires nor forbids use of these alternative
 approaches either alongside or instead of the \voparquet\ convention
 described here, nor does it prescribe how to reconcile
 the redundancy and possible conflicts that may arise from
