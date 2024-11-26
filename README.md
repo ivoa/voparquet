@@ -13,4 +13,9 @@ complete LaTeX installation, a sufficiently capable `make`, preferably
 For further
 details, see [ivoatexDoc](https://ivoa.net/documents/Notes/IVOATex/).
 
+Alternatively, for now you can probably find a recent/current version of the
+built document here:
+[votable.pdf](https://www.star.bristol.ac.uk/mbt/voparquet/voparquet.pdf) and
+[votable.html](https://www.star.bristol.ac.uk/mbt/voparquet/voparquet.html).
+
 This document is distributed under CC-BY-SA.
