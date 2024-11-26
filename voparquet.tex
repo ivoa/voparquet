@@ -68,13 +68,13 @@ At the time of writing (2024),
 several astronomy projects including Rubin, Gaia and SPHEREx
 are using or planning to use parquet for storage, processing
 and distribution of large-scale astronomical data products.
-I/O libraries are available in many languages including Python,
+I/O libraries are available in various languages including Python,
 Java, C++ and Rust, and these have been leveraged by astronomer-facing
 software such as Astropy, CDS services and TOPCAT to facilitate
 use of parquet data in astronomy.
 
 While offering efficient data processing facilities however,
-the standard metadata provided by Parquet files is quite primitive.
+the standard metadata provided by Parquet files is quite rudimentary.
 Apart from a name and datatype for each column,
 there is only a list of untyped key-value pairs per table
 and per column, with no standard semantics for the keys.
@@ -197,7 +197,7 @@ might look like this:
 This dataless VOTable document is stored in the file-level
 {\tt key\_value\_metadata} list of the parquet file.
 That list is defined by the parquet file
-format\footnote{\url{https://parquet.apache.org/docs/file-format/}}
+format\footnote{\url{https://github.com/apache/parquet-format}}
 to contain an unstructured list of string-string key-value pairs,
 and is available for applications to populate with arbitrary metadata.
 The \voparquet\ convention requires the following key-value pairs
@@ -208,8 +208,9 @@ to be present:
 \item[{\tt IVOA.VOTable-Parquet.content}]
    The content of the data-less VOTable document described above,
    encoded using UTF-8.
-   A preceding XML declaration (\verb|<?xml ... ?>|) is optional,
-   but if present must not report a non-UTF-8 encoding.
+   An XML declaration (``\verb|<?xml ... ?>|'') may optionally
+   precede the content,
+   but if present it must not declare a non-UTF-8 encoding.
 \end{bigdescription}
 
 \subsection{Data/Metadata Mismatches}
@@ -217,15 +218,15 @@ to be present:
 In the most straightforward case, there will be a one-to-one mapping
 of columns in the parquet data table and the VOTable metadata table,
 where the N'th FIELD of the metadata table provides an accurate
-description of the N'th column of the data table,
+description of the N'th column ({\tt SchemaElement}) of the data table,
 in particular declaring a VOTable \xmlel{datatype} attribute that
 corresponds to the physical/logical type of that parquet column.
-It is expected that for many or most tables this will be the case.
+It is expected that for many or most tables in the VO this will be the case.
 
 However, the data models of VOTable and Parquet do not exactly match,
 and it is possible to store columns in a parquet file that cannot be
 accurately described with VOTable metadata;
-for instance parquet columns can store structured objects and
+for instance parquet columns can store structured objects ({\tt MAP}s) and
 unsigned 64-bit integers, neither of which can be stored directly
 in VOTable.
 
