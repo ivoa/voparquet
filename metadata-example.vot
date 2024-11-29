@@ -1,5 +1,5 @@
 <VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
-  <RESOURCE type="results">
+  <RESOURCE>
     <TABLE name="sky">
       <DESCRIPTION>Star catalogue</DESCRIPTION>
       <FIELD datatype="long" name="ID">

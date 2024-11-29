@@ -167,23 +167,17 @@ the rich metadata associated with the original table.
 
 The VOTable metadata document stored in the parquet metadata
 must contain a \xmlel{TABLE} element describing the parquet data table.
-This \xmlel{TABLE} element, designated the {\em metadata table element},
-looks exactly like a normal \xmlel{TABLE} element
-except that it has no \xmlel{DATA} child
-(such dataless tables are permitted by the VOTable schema).
+This looks exactly like a normal \xmlel{TABLE} element
+except that it has no \xmlel{DATA} child;
+such dataless tables are permitted by the VOTable schema.
 In particular it must contain \xmlel{FIELD} elements describing the
 columns of the parquet data,
 and it may contain other elements such as \xmlel{PARAM}, \xmlel{COOSYS} etc
 providing additional table-level metadata.
  
-This metadata table element should appear as the
-only \xmlel{TABLE} child of the only \xmlel{RESOURCE} element
-marked with the \xmlel{type="results"} attribute in the VOTable document.
-This is in line with DALI 1.1 Section 4.4 \citep{2017ivoa.spec.0517D}.
-It should therefore be the only node identified by the XPath
-``\verb|//v:RESOURCE[@type='results']/v:TABLE|'',
-where ``{\tt v}'' represents the VOTable namespace.
-Other \xmlel{RESOURCE}s and \xmlel{TABLE}s,
+This \xmlel{DATA}-less \xmlel{TABLE} must be the first
+\xmlel{TABLE} element in the VOTable document.
+Other \xmlel{TABLE}s,
 for instance providing auxiliary data or metadata,
 may appear in the VOTable document,
 but are not used to describe the parquet data directly.
