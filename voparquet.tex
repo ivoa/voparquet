@@ -27,7 +27,7 @@
 
 \begin{document}
 \begin{abstract}
-Parquet is an efficient file format for tabular data,
+Parquet is a file format for tabular data,
 with widespread industry tool support.
 It is being adopted by several astronomy projects for bulk storage and
 distribution of large table products.
@@ -73,7 +73,7 @@ Java, C++ and Rust, and these have been leveraged by astronomer-facing
 software such as Astropy, CDS services and TOPCAT to facilitate
 use of parquet data in astronomy.
 
-While offering efficient data processing facilities however,
+While offering efficient data storage however,
 the standard metadata provided by Parquet files is quite rudimentary.
 Apart from a name and datatype for each column,
 there is only a list of untyped key-value pairs per table
@@ -81,8 +81,8 @@ and per column, with no standard semantics for the keys.
 For scientific usability, better metadata is desirable and even necessary,
 especially in view of the complexity of the data represented;
 astronomy tables can easily contain hundreds of columns.
-A minimum requirement is column attributes such as units, descriptions
-and UCDs; in many cases additional information relating to
+A minimum requirement is column attributes such as units, descriptions,
+UCDs and precisions; in many cases additional information relating to
 coordinate systems, service descriptors or processing flags
 may also be required.
 
@@ -90,7 +90,7 @@ The VOTable format \citep{2019ivoa.spec.1021O}
 has been developed within the VO since its
 inception to hold exactly the kind of metadata required here.
 Combining the virtues of VOTable and Parquet therefore
-can supply a format which delivers efficiency alongside
+can supply a format which delivers storage efficiency alongside
 rich astronomical metadata.
 
 This Note addresses the question of how to effect that combination.
@@ -105,6 +105,9 @@ prescriptions here will remain valid as a backwardly compatible
 baseline for some while, so that future iterations of parquet I/O
 software in the VO will remain compatible with files written
 according to this Note.
+For this reason, we restrict ourselves here to the minimum rules
+that will enable interoperability, and avoid imposing requirements
+on points of detail for which the best way forward is not obvious.
 
 The normative part of this \voparquet\ convention
 is quite short and can be found in Section~\ref{sec:serialization}
