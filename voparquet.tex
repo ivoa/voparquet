@@ -218,28 +218,35 @@ to be present:
 
 In the most straightforward case, there will be a one-to-one mapping
 of columns in the parquet data table and the VOTable metadata table,
-where the N'th FIELD of the metadata table provides an accurate
-description of the N'th column ({\tt SchemaElement}) of the data table,
-in particular declaring a VOTable \xmlel{datatype} attribute that
-corresponds to the physical/logical type of that parquet column.
+where the $N^{\rm th}$ \xmlel{FIELD} of the VOTable metadata table
+provides an accurate description of the $N^{\rm th}$ top-level column
+($N^{\rm th}$ {\tt SchemaElement} child of the root {\tt SchemaElement})
+of the parquet data table,
+in particular declaring VOTable \xmlel{datatype} and \xmlel{arraysize}
+attributes that
+correspond to the physical/logical type of that parquet column.
 It is expected that for many or most tables in the VO this will be the case.
 
 However, the data models of VOTable and Parquet do not exactly match,
 and it is possible to store columns in a parquet file that cannot
 accurately be described by VOTable metadata;
-for instance parquet columns can store structured objects ({\tt MAP}s) and
+for instance parquet columns can store structured objects and
 unsigned 64-bit integers, neither of which can be stored directly
 in VOTable.
 
 In the case of such mismatches,
-\voparquet\ writers must write one VOTable FIELD
-for each top-level parquet column,
-and should make a best effort to describe the data.
-For parquet columns with types that do not resemble any VOTable datatype,
-for instance structured data, it is recommended to mark them as
-string values, e.g.\ \verb|datatype="char" arraysize="*"|.
+it is recommended that for each top-level parquet column,
+\voparquet\ writers should write exactly one VOTable \xmlel{FIELD}
+element that makes a best effort to describe the data.
+If a parquet column has a type that does not resemble any VOTable datatype,
+for instance structured data, it is recommended to describe it as a
+VOTable string, e.g.\ \verb|datatype="char"| \verb|arraysize="*"|.
 It is not permitted to omit the \xmlel{datatype} attribute altogether,
 since that would result in an illegal VOTable document.
+Other approaches are possible, for instance describing
+the primitive sub-elements of a structured parquet top-level column
+using multiple VOTable \xmlel{FIELD}s,
+but these are not currently recommended.
 
 Readers must treat the parquet data and datatypes as authoritative,
 and may make use of as much VOTable column metadata as is feasible,
@@ -248,10 +255,11 @@ VOTable datatypes that are incompatible with the parquet data columns.
 Ignoring the metadata table \xmlel{datatype} and \xmlel{arraysize} attributes
 on \xmlel{FIELD} elements altogether in favour of column types acquired
 from the parquet parsing would be one way for readers to handle this.
-If no reconciliation between the VOTable metadata and
-parquet data can be made, or for any other reason,
-the reader is free to discard the VOTable metadata and use only
-the parquet data.
+If the number of VOTable columns cannot be reconciled with the parquet data,
+the reader must discard the VOTable column metadata.
+The reader is free to discard some or all of the VOTable metadata
+in case of any other difficulty in reconciling the VOTable metadata
+and parquet data, or for any other reason.
 
 Future evolutions of this convention may refine or adjust this advice.
 
