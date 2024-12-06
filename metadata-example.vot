@@ -1,7 +1,9 @@
 <VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
   <RESOURCE>
-    <TABLE name="sky">
-      <DESCRIPTION>Star catalogue</DESCRIPTION>
+    <TABLE name="MessierObjects">
+      <DESCRIPTION>Nebulae and clusters</DESCRIPTION>
+      <PARAM name="author" datatype="char" arraysize="*"
+             value="Charles Messier"/>
       <FIELD datatype="long" name="ID">
         <DESCRIPTION>Source identifier</DESCRIPTION>
       </FIELD>

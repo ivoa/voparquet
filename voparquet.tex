@@ -27,10 +27,10 @@
 
 \begin{document}
 \begin{abstract}
-Parquet is a file format for tabular data,
+Parquet is a file format for record-based data,
 with widespread industry tool support.
 It is being adopted by several astronomy projects for bulk storage and
-distribution of large table products.
+distribution of large tabular data products.
 This Note discusses best practice for use of parquet within the VO,
 and in particular defines the \voparquet\ convention
 which uses VOTable to attach rich astronomical metadata
@@ -57,7 +57,7 @@ infrastructure that enable VO applications.
 
 The Apache Parquet file
 format\footnote{\url{https://parquet.apache.org/docs/}}
-is a column-oriented storage format for tabular data
+is a column-oriented storage format for record-based data
 first developed in 2013.
 It offers per-column compression, dictionary encoding, and
 a kind of column value indexing.
@@ -77,7 +77,7 @@ While offering efficient data storage however,
 the standard metadata provided by Parquet files is quite rudimentary.
 Apart from a name and datatype for each column,
 there is only a list of untyped key-value pairs per table
-and per column, with no standard semantics for the keys.
+and per column-chunk, with no standard semantics for the keys.
 For scientific usability, better metadata is desirable and even necessary,
 especially in view of the complexity of the data represented;
 astronomy tables can easily contain hundreds of columns.
@@ -120,6 +120,7 @@ The other sections provide context and discussion.
 The topic of this Note suggests other discussions, including
 best practice for sharding large datasets among multiple parquet files,
 policy for choice of compression algorithms within parquet,
+suitability of parquet for archival storage,
 and the application of similar ideas to enhance other metadata-poor
 file formats using VOTable.
 
@@ -132,7 +133,7 @@ datasets too large to be rewritten at a later date.
 
 Future work may build on the current document and on implementation
 experience to produce a revised Note or a Recommendation-track document
-that enhances the current proposal or addresses
+that extends the current proposal or addresses
 some of these wider questions.
 
 \section{\voparquet\ Convention}
@@ -162,7 +163,7 @@ When reading such a file:
 
 The serialised table is therefore a perfectly legal parquet file,
 which can be read by any parquet I/O software.
-But \voparquet-aware software can use the attached VOTable to recover
+But \voparquet-aware software can use the attached dataless VOTable to recover
 the rich metadata associated with the original table.
 
 \subsection{Serialization Format}
@@ -188,14 +189,17 @@ The VOTable document must be a schema-valid and legal VOTable instance.
 No particular VOTable version is mandated by this convention.
 
 An example VOTable metadata document describing a 3-column table
-might look like this:
+might look like this\footnote{
+  The apparent mismatch between version and namespace is intended;
+  see VOTable 1.4 section 3 for details.}:
 \lstinputlisting{metadata-example.vot}
 
-This dataless VOTable document is stored in the file-level
-{\tt key\_value\_metadata} list of the parquet file.
+This dataless VOTable document is stored in the
+{\tt key\_value\_metadata} list of the
+{\tt FileMetaData} structure in the parquet footer.
 That list is defined by the parquet file
 format\footnote{\url{https://github.com/apache/parquet-format}}
-to contain an unstructured list of string-string key-value pairs,
+to contain an unstructured collection of string-string key-value pairs,
 and is available for applications to populate with arbitrary metadata.
 The \voparquet\ convention requires the following key-value pairs
 to be present:
@@ -221,8 +225,8 @@ corresponds to the physical/logical type of that parquet column.
 It is expected that for many or most tables in the VO this will be the case.
 
 However, the data models of VOTable and Parquet do not exactly match,
-and it is possible to store columns in a parquet file that cannot be
-accurately described with VOTable metadata;
+and it is possible to store columns in a parquet file that cannot
+accurately be described by VOTable metadata;
 for instance parquet columns can store structured objects ({\tt MAP}s) and
 unsigned 64-bit integers, neither of which can be stored directly
 in VOTable.
@@ -258,7 +262,7 @@ with parquet files.
 These include variations on the idea of
 using a VOTable document stored {\em outside\/} of the described parquet
 serialization,
-and use of the existing per-table and per-column key-value lists
+and use of the existing per-table and per-column-chunk key-value lists
 defined by the parquet format for direct (non-VOTable) storage
 of metadata items.
 
