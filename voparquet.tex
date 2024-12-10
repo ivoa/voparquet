@@ -229,10 +229,12 @@ It is expected that for many or most tables in the VO this will be the case.
 
 However, the data models of VOTable and Parquet do not exactly match,
 and it is possible to store columns in a parquet file that cannot
-accurately be described by VOTable metadata;
-for instance parquet columns can store structured objects and
-unsigned 64-bit integers, neither of which can be stored directly
-in VOTable.
+accurately be described by VOTable metadata.
+Columns containing scalars and 1-d arrays of booleans,
+unsigned 8-bit integers, signed 16/32/64-bit integers
+and strings map straightforwardly to VOTable,
+but other types such as unsigned 64-bit integers
+and structured data do not.
 
 In the case of such mismatches,
 it is recommended that for each top-level parquet column,
