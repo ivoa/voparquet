@@ -8,7 +8,7 @@ DOCNAME = voparquet
 DOCVERSION = 1.0
 
 # Publication date, ISO format; update manually for "releases"
-DOCDATE = ???
+DOCDATE = 2025-01-14
 
 # What is it you're writing: NOTE, WD, PR, REC, PEN, or EN
 DOCTYPE = NOTE
