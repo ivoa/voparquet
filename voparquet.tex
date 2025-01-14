@@ -64,7 +64,7 @@ a kind of column value indexing.
 A number of data processing environments optimised for parallel
 computing make use of these features to enable fast processing
 of large or very large tables.
-At the time of writing (2024),
+At the time of writing (early 2025),
 several astronomy projects including Rubin, Gaia and SPHEREx
 are using or planning to use parquet for storage, processing
 and distribution of large-scale astronomical data products.
@@ -74,11 +74,12 @@ software such as Astropy, CDS services and TOPCAT to facilitate
 use of parquet data in astronomy.
 
 While offering efficient data storage however,
-the standard metadata provided by Parquet files is quite rudimentary.
+the standard semantic metadata provided by Parquet files is quite rudimentary.
 Apart from a name and datatype for each column,
 there is only a list of untyped key-value pairs per table
 and per column-chunk, with no standard semantics for the keys.
-For scientific usability, better metadata is desirable and even necessary,
+For scientific usability, better semantic metadata
+is desirable and even necessary,
 especially in view of the complexity of the data represented;
 astronomy tables can easily contain hundreds of columns.
 A minimum requirement is column attributes such as units, descriptions,
